@@ -1,5 +1,5 @@
 class Computer
-  attr_reader :numbers, :same_numbers, :correct_position, :index_code, :index_guess
+  attr_reader :numbers, :same_numbers, :correct_position, :index_code, :index_guess, :wrong_position
 
   def initialize
     @numbers = []
@@ -36,9 +36,22 @@ class Computer
 
     @index_code.each do |key_code, value_code|
       @index_guess.each do |key_guess, value_guess|
-        @correct_position.push(value_guess) if key_code == key_guess && value_code == value_guess
+        if key_code == key_guess && value_code == value_guess
+          @correct_position.push(value_guess)
+        end
       end
     end
+  end
+  # If ary2(correct numbers) is included in ary1(matched numbers), delete the values of ary2 found in ary1.
+  # Assigns correct numbers with wrong positions to @wrong_position. Respects duplicates.
+  def return_wrong(ary1, ary2)
+    ary1_cpy = ary1.dup
+    ary2.all? do |n|
+      idx = ary1_cpy.index(n)
+      return false if idx.nil?
+      ary1_cpy.delete_at(idx)
+    end
+    @wrong_position = ary1_cpy
   end
 end
 
@@ -56,8 +69,12 @@ human = Human.new
 computer.generate_code
 p computer.numbers
 
+
+
 puts 'enter a number: '
 human.guess_color
 computer.compare(human)
+computer.return_wrong(computer.same_numbers, computer.correct_position)
 p computer.same_numbers
 p computer.correct_position
+p computer.wrong_position
