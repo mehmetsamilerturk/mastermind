@@ -74,6 +74,17 @@ puts 'enter a number: '
 human.guess_color
 computer.compare(human)
 computer.return_wrong(computer.same_numbers, computer.correct_position)
-p computer.same_numbers
+computer.same_numbers
+
+size_correct = computer.correct_position.size
+size_wrong = computer.wrong_position.size
+
+correct_cpy = computer.correct_position.dup
+wrong_cpy = computer.wrong_position.dup
+
+correct_cpy.replace(Array.new(size_correct, 'O'))
+wrong_cpy.replace(Array.new(size_wrong, 'X'))
+
 p computer.correct_position
 p computer.wrong_position
+p (correct_cpy + wrong_cpy).join
