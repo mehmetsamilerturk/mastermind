@@ -1,11 +1,10 @@
 class Computer
-  attr_reader :numbers, :same_numbers, :correct_position, :index_code, :index_guess, :wrong_position
+  attr_reader :numbers, :same_numbers, :correct_position, :wrong_position, :code_remainder, :guess_remainder
 
   def initialize
     @numbers = []
     @correct_position = []
-    @index_code = {}
-    @index_guess = {}
+    @wrong_position = []
   end
 
   def generate_code
@@ -20,39 +19,40 @@ class Computer
     code_split = @numbers.split('')
     guess_split = human.guess.split('')
 
-    @same_numbers = guess_split.select do |num_guess|
-      code_split.include?(num_guess)
-    end
-
-    code_split.each_with_index do |num, index|
-      @index_code[index] = num
-      @index_code
-    end
-
-    guess_split.each_with_index do |num, index|
-      @index_guess[index] = num
-      @index_guess
-    end
-
-    @index_code.each do |key_code, value_code|
-      @index_guess.each do |key_guess, value_guess|
-        @correct_position.push(value_guess) if key_code == key_guess && value_code == value_guess
+    code_split.each_with_index do |code_val, code_index|
+      guess_split.each_with_index do |guess_val, guess_index|
+        @correct_position.push(guess_val) if code_index == guess_index && code_val == guess_val
       end
     end
-  end
 
-  # If ary2(correct numbers) is included in ary1(matched numbers), delete the values of ary2 found in ary1.
-  # Assigns correct numbers with wrong positions to @wrong_position. Respects duplicates.
-  def return_wrong(ary1, ary2)
-    ary1_cpy = ary1.dup
-    ary2.all? do |n|
-      idx = ary1_cpy.index(n)
-      # guard clause
+    @code_remainder = code_split.dup
+    @guess_remainder = guess_split.dup
+
+    @correct_position.all? do |n|
+      idx = @code_remainder.index(n)
+
       return false if idx.nil?
 
-      ary1_cpy.delete_at(idx)
+      @code_remainder.delete_at(idx)
     end
-    @wrong_position = ary1_cpy
+
+    @correct_position.all? do |n|
+      idx = @guess_remainder.index(n)
+
+      return false if idx.nil?
+
+      @guess_remainder.delete_at(idx)
+    end
+
+    @code_remainder.each do |code_val|
+      @guess_remainder.each do |guess_val|
+        next unless code_val == guess_val
+
+        @wrong_position.push(guess_val)
+        @code_remainder.delete(guess_val)
+        @guess_remainder.delete(guess_val)
+      end
+    end
   end
 end
 
@@ -72,9 +72,8 @@ p computer.numbers
 
 puts 'enter a number: '
 human.guess_color
+
 computer.compare(human)
-computer.return_wrong(computer.same_numbers, computer.correct_position)
-computer.same_numbers
 
 size_correct = computer.correct_position.size
 size_wrong = computer.wrong_position.size
