@@ -1,5 +1,64 @@
+class String
+  # colorization
+  def colorize(color_code)
+    "\e[#{color_code}m#{self}\e[0m"
+  end
+
+  def red
+    colorize(31)
+  end
+
+  def green
+    colorize(32)
+  end
+
+  def yellow
+    colorize(33)
+  end
+
+  def blue
+    colorize(34)
+  end
+
+  def pink
+    colorize(35)
+  end
+
+  def light_blue
+    colorize(36)
+  end
+
+  def bg_red
+    colorize(41)
+  end
+
+  def bg_green
+    colorize(42)
+  end
+
+  def bg_blue
+    colorize(44)
+  end
+
+  def bg_white
+    colorize(47)
+  end
+
+  def bg_cyan
+    colorize(46)
+  end
+
+  def bg_magenta
+    colorize(45)
+  end
+
+  def bg_yellow
+    colorize(43)
+  end
+end
+
 class Computer
-  attr_reader :numbers, :same_numbers, :correct_position, :wrong_position, :code_remainder, :guess_remainder
+  attr_reader :numbers, :correct_position, :wrong_position, :code_remainder, :guess_remainder
 
   def initialize
     @numbers = []
@@ -58,6 +117,10 @@ end
 class Human
   attr_reader :guess
 
+  def initialize
+    @guess = ''
+  end
+
   def guess_color
     @guess = gets.chomp
   end
@@ -67,9 +130,11 @@ computer = Computer.new
 human = Human.new
 
 computer.generate_code
-p computer.numbers
+computer.numbers
 
-puts 'enter a number: '
+puts "colors: #{'1'.bg_blue} #{'2'.bg_cyan} #{'3'.bg_green} #{'4'.bg_magenta} #{'5'.bg_red} #{'6'.bg_yellow}"
+
+puts 'enter a 4 digit number between 1-6: '
 human.guess_color
 
 computer.compare(human)
@@ -80,9 +145,24 @@ size_wrong = computer.wrong_position.size
 correct_cpy = computer.correct_position.dup
 wrong_cpy = computer.wrong_position.dup
 
-correct_cpy.replace(Array.new(size_correct, 'O'))
-wrong_cpy.replace(Array.new(size_wrong, 'X'))
+correct_cpy.replace(Array.new(size_correct, 'O'.green))
+wrong_cpy.replace(Array.new(size_wrong, 'O'.red))
 
-p computer.correct_position
-p computer.wrong_position
-p (correct_cpy + wrong_cpy).join
+formatted_outout = human.guess.split('').map do |e|
+  case e
+  when '1'
+    e = '1'.bg_blue
+  when '2'
+    e = '2'.bg_cyan
+  when '3'
+    e = '3'.bg_green
+  when '4'
+    e = '4'.bg_magenta
+  when '5'
+    e = '5'.bg_red
+  when '6'
+    e = '6'.bg_yellow
+  end
+end
+
+puts "#{formatted_outout.join(' ')}  Clues: #{(correct_cpy + wrong_cpy).join}"
