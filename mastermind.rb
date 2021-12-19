@@ -46,11 +46,10 @@ class Computer
 
     @code_remainder.each do |code_val|
       @guess_remainder.each do |guess_val|
-        next unless code_val == guess_val
-
-        @wrong_position.push(guess_val)
-        @code_remainder.delete(guess_val)
-        @guess_remainder.delete(guess_val)
+        if code_val == guess_val
+          @wrong_position.push(guess_val)
+          break
+        end
       end
     end
   end
