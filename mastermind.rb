@@ -105,67 +105,84 @@ class Computer
 
     @code_remainder.each do |code_val|
       @guess_remainder.each do |guess_val|
-        if code_val == guess_val
-          @wrong_position.push(guess_val)
+        next unless code_val == guess_val
 
-          @guess_remainder.delete_at(@guess_remainder.index(guess_val))
+        @wrong_position.push(guess_val)
 
-          break
-        end
+        @guess_remainder.delete_at(@guess_remainder.index(guess_val))
+
+        break
       end
     end
   end
 end
 
 class Human
-  attr_reader :guess
+  attr_reader :guess, :secret_code
 
   def guess_color
     @guess = gets.chomp
+  end
+
+  def create_code
+    @secret_code = gets.chomp
   end
 end
 
 computer = Computer.new
 human = Human.new
 
-computer.generate_code
+puts 'Would like to be the code maker or code breaker?'
+puts "Enter '1' to be the code maker \nEnter '2' to be the code breaker"
+choice = gets.chomp
 
-puts "colors: #{'1'.bg_blue} #{'2'.bg_cyan} #{'3'.bg_green} #{'4'.bg_magenta} #{'5'.bg_red} #{'6'.bg_yellow}"
+if choice == '2'
+  computer.generate_code
 
-until human.guess == computer.numbers
+  puts "colors: #{'1'.bg_blue} #{'2'.bg_cyan} #{'3'.bg_green} #{'4'.bg_magenta} #{'5'.bg_red} #{'6'.bg_yellow}"
 
-  puts 'enter a 4 digit number between 1-6: '
-  human.guess_color
+  until human.guess == computer.numbers
 
-  computer.compare(human)
+    puts 'enter a 4 digit number between 1-6: '
+    human.guess_color
 
-  size_correct = computer.correct_position.size
-  size_wrong = computer.wrong_position.size
+    computer.compare(human)
 
-  correct_cpy = computer.correct_position.dup
-  wrong_cpy = computer.wrong_position.dup
+    size_correct = computer.correct_position.size
+    size_wrong = computer.wrong_position.size
 
-  correct_cpy.replace(Array.new(size_correct, 'O'.green))
-  wrong_cpy.replace(Array.new(size_wrong, 'O'.red))
+    correct_cpy = computer.correct_position.dup
+    wrong_cpy = computer.wrong_position.dup
 
-  formatted_outout = human.guess.split('').map do |e|
-    case e
-    when '1'
-      e = '1'.bg_blue
-    when '2'
-      e = '2'.bg_cyan
-    when '3'
-      e = '3'.bg_green
-    when '4'
-      e = '4'.bg_magenta
-    when '5'
-      e = '5'.bg_red
-    when '6'
-      e = '6'.bg_yellow
+    correct_cpy.replace(Array.new(size_correct, 'O'.green))
+    wrong_cpy.replace(Array.new(size_wrong, 'O'.red))
+
+    formatted_outout = human.guess.split('').map do |e|
+      case e
+      when '1'
+        e = '1'.bg_blue
+      when '2'
+        e = '2'.bg_cyan
+      when '3'
+        e = '3'.bg_green
+      when '4'
+        e = '4'.bg_magenta
+      when '5'
+        e = '5'.bg_red
+      when '6'
+        e = '6'.bg_yellow
+      end
     end
-  end
 
-  puts "#{formatted_outout.join(' ')}  Clues: #{(correct_cpy + wrong_cpy).join}"
-  computer.correct_position.clear
-  computer.wrong_position.clear
+    puts "#{formatted_outout.join(' ')}  Clues: #{(correct_cpy + wrong_cpy).join}"
+    computer.correct_position.clear
+    computer.wrong_position.clear
+  end
+elsif choice == '1'
+  puts "colors: #{'1'.bg_blue} #{'2'.bg_cyan} #{'3'.bg_green} #{'4'.bg_magenta} #{'5'.bg_red} #{'6'.bg_yellow}"
+  print "Enter your 4 digit secret code between these colors(1-6)> "
+  human.create_code
+  p human.secret_code
+else
+  puts "Invalid input"
 end
