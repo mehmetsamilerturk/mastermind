@@ -80,15 +80,16 @@ end
 
 class Computer
   include FormatOutput
-
+  # Foreground digits are the ones that will never change, background digits are increasing.
   attr_reader :numbers, :correct_position, :wrong_position, :code_remainder, :guess_remainder
-  attr_accessor :guess
+  attr_accessor :guess, :combinations
 
   def initialize
     @numbers = []
     @correct_position = []
     @wrong_position = []
     @guess = []
+    @foreground_digits = []
   end
 
   def generate_code
@@ -142,12 +143,13 @@ class Computer
   end
 
   def guess_color
-    number = Random.new
+    a = [1, 2, 3, 4, 5, 6]
+    b = [1, 2, 3, 4, 5, 6]
+    c = [1, 2, 3, 4, 5, 6]
+    d = [1, 2, 3, 4, 5, 6]
+    @combinations = a.product(b, c, d)
 
-    (1..4).each do |_i|
-      @guess.push(number.rand(1..6))
-    end
-    @guess = @guess.join
+    @guess = @combinations.sample.join
   end
 end
 
@@ -159,7 +161,6 @@ class Human
   def initialize
     @correct_position = []
     @wrong_position = []
-
   end
 
   def create_code
@@ -225,6 +226,8 @@ if choice == '2'
 
   puts "colors: #{'1'.bg_blue} #{'2'.bg_cyan} #{'3'.bg_green} #{'4'.bg_magenta} #{'5'.bg_red} #{'6'.bg_yellow}"
 
+  i = 1
+
   until human.guess == computer.numbers
 
     puts 'enter a 4 digit number between 1-6: '
@@ -241,7 +244,10 @@ if choice == '2'
     correct_cpy.replace(Array.new(size_correct, 'O'.green))
     wrong_cpy.replace(Array.new(size_wrong, 'O'.red))
 
+    puts "Turn #{i}"
     puts "#{human.format_output(human).join(' ')}  Clues: #{(correct_cpy + wrong_cpy).join}"
+    i += 1
+
     computer.correct_position.clear
     computer.wrong_position.clear
 
@@ -251,10 +257,13 @@ elsif choice == '1'
   print 'Enter your 4 digit secret code between these colors(1-6)> '
   human.create_code
 
-  until computer.guess == human.secret_code
-    computer.guess_color
+  i = 1
 
+  until computer.guess == human.secret_code
+
+    computer.guess_color
     human.compare(computer)
+    computer.combinations.delete(computer.guess)
 
     size_correct = human.correct_position.size
     size_wrong = human.wrong_position.size
@@ -265,11 +274,12 @@ elsif choice == '1'
     correct_cpy.replace(Array.new(size_correct, 'O'.green))
     wrong_cpy.replace(Array.new(size_wrong, 'O'.red))
 
+    puts "Turn #{i}"
+    i += 1
     puts "#{computer.format_output(computer).join(' ')}  Clues: #{(correct_cpy + wrong_cpy).join}"
 
     human.correct_position.clear
     human.wrong_position.clear
-    computer.guess = []
   end
 else
   puts 'Invalid input'
