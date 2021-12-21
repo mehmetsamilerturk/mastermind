@@ -80,7 +80,7 @@ end
 
 class Computer
   include FormatOutput
-  # Foreground digits are the ones that will never change, background digits are increasing.
+
   attr_reader :numbers, :correct_position, :wrong_position, :code_remainder, :guess_remainder
   attr_accessor :guess, :combinations
 
@@ -89,7 +89,12 @@ class Computer
     @correct_position = []
     @wrong_position = []
     @guess = []
-    @foreground_digits = []
+    a = [1, 2, 3, 4, 5, 6]
+    b = [1, 2, 3, 4, 5, 6]
+    c = [1, 2, 3, 4, 5, 6]
+    d = [1, 2, 3, 4, 5, 6]
+    @combinations = a.product(b, c, d)
+    @combinations.map! {|nums| nums.join}
   end
 
   def generate_code
@@ -143,13 +148,7 @@ class Computer
   end
 
   def guess_color
-    a = [1, 2, 3, 4, 5, 6]
-    b = [1, 2, 3, 4, 5, 6]
-    c = [1, 2, 3, 4, 5, 6]
-    d = [1, 2, 3, 4, 5, 6]
-    @combinations = a.product(b, c, d)
-
-    @guess = @combinations.sample.join
+    @guess = @combinations.sample
   end
 end
 
@@ -263,8 +262,9 @@ elsif choice == '1'
 
     computer.guess_color
     human.compare(computer)
-    computer.combinations.delete(computer.guess)
 
+    computer.combinations.delete(computer.guess)
+    
     size_correct = human.correct_position.size
     size_wrong = human.wrong_position.size
 
